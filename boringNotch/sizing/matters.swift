@@ -23,6 +23,9 @@ let collapsedNotchSideInset: CGFloat = 16
 // Extra space for the inactive animation is split evenly on both sides of the
 // physical notch, so it stays centered in the menu bar.
 let inactiveAnimationSideExtension: CGFloat = 28
+// Intentionally broad: this optional mode creates a small football pitch that
+// spans roughly two menu-bar items on each side of the hardware notch.
+let expandedInactiveAnimationSideExtension: CGFloat = 120
 
 enum MusicPlayerImageSizes {
     static let cornerRadiusInset: (opened: CGFloat, closed: CGFloat) = (opened: 13.0, closed: 4.0)

@@ -36,6 +36,7 @@ struct ContentView: View {
     @Default(.useMusicVisualizer) var useMusicVisualizer
 
     @Default(.showNotHumanFace) var showNotHumanFace
+    @Default(.expandFootballAnimation) var expandFootballAnimation
 
     // Shared interactive spring for movement/resizing to avoid conflicting animations
     private let animationSpring = Animation.interactiveSpring(response: 0.38, dampingFraction: 0.8, blendDuration: 0)
@@ -91,7 +92,9 @@ struct ContentView: View {
             return 0
         }
 
-        return inactiveAnimationSideExtension
+        return expandFootballAnimation
+            ? expandedInactiveAnimationSideExtension
+            : inactiveAnimationSideExtension
     }
 
     var body: some View {
@@ -126,6 +129,7 @@ struct ContentView: View {
                         color: ((vm.notchState == .open || isHovering) && Defaults[.enableShadow])
                             ? .black.opacity(0.7) : .clear, radius: Defaults[.cornerRadiusScaling] ? 6 : 4
                     )
+                    .animation(.spring(response: 0.35, dampingFraction: 0.8), value: expandFootballAnimation)
                     .padding(
                         .bottom,
                         vm.effectiveClosedNotchHeight == 0 ? 10 : 0

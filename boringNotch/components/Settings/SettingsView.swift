@@ -1390,6 +1390,10 @@ struct Appearance: View {
                 Defaults.Toggle(key: .showNotHumanFace) {
                     Text("Show cool face animation while inactive")
                 }
+                Defaults.Toggle(key: .expandFootballAnimation) {
+                    Text("Expand football animation while inactive")
+                }
+                .disabled(!Defaults[.showNotHumanFace])
             } header: {
                 HStack {
                     Text("Additional features")
