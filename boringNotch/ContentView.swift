@@ -80,6 +80,20 @@ struct ContentView: View {
         return chinWidth
     }
 
+    private var inactiveFaceTrailingOffset: CGFloat {
+        guard vm.notchState == .closed,
+              !coordinator.expandingView.show,
+              !musicManager.isPlaying,
+              musicManager.isPlayerIdle,
+              Defaults[.showNotHumanFace],
+              !vm.hideOnClosed
+        else {
+            return 0
+        }
+
+        return inactiveFaceTrailingExtension
+    }
+
     var body: some View {
         // Calculate scale based on gesture progress only
         let gestureScale: CGFloat = {
@@ -112,6 +126,7 @@ struct ContentView: View {
                         color: ((vm.notchState == .open || isHovering) && Defaults[.enableShadow])
                             ? .black.opacity(0.7) : .clear, radius: Defaults[.cornerRadiusScaling] ? 6 : 4
                     )
+                    .offset(x: inactiveFaceTrailingOffset / 2)
                     .padding(
                         .bottom,
                         vm.effectiveClosedNotchHeight == 0 ? 10 : 0
@@ -366,22 +381,21 @@ struct ContentView: View {
 
     @ViewBuilder
     func BoringFaceAnimation() -> some View {
-        HStack {
-            HStack {
-                Rectangle()
-                    .fill(.clear)
-                    .frame(
-                        width: max(0, vm.effectiveClosedNotchHeight - 12),
-                        height: max(0, vm.effectiveClosedNotchHeight - 12)
-                    )
-                Rectangle()
-                    .fill(.black)
-                    .frame(width: vm.closedNotchSize.width - 20)
-                MinimalFaceFeatures()
-            }
-        }.frame(
+        HStack(spacing: 0) {
+            Spacer(minLength: 0)
+            CigaretteIcon()
+                .scaleEffect(0.55)
+                .frame(
+                    width: inactiveFaceTrailingOffset,
+                    height: vm.effectiveClosedNotchHeight,
+                    alignment: .trailing
+                )
+                .offset(x: 10)
+        }
+        .frame(
+            width: vm.closedNotchSize.width + inactiveFaceTrailingOffset,
             height: vm.effectiveClosedNotchHeight,
-            alignment: .center
+            alignment: .trailing
         )
     }
 

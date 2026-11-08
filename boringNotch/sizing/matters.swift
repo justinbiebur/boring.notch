@@ -17,6 +17,11 @@ let openNotchSize: CGSize = .init(width: 640, height: 190)
 let windowSize: CGSize = .init(width: openNotchSize.width, height: openNotchSize.height + shadowPadding)
 let cornerRadiusInsets: (opened: (top: CGFloat, bottom: CGFloat), closed: (top: CGFloat, bottom: CGFloat)) = (opened: (top: 19, bottom: 24), closed: (top: 6, bottom: 14))
 
+// Keep the inactive notch clear of adjacent menu-bar items. This is applied only
+// on displays with a hardware notch; expanded content retains its normal width.
+let collapsedNotchSideInset: CGFloat = 16
+let inactiveFaceTrailingExtension: CGFloat = 28
+
 enum MusicPlayerImageSizes {
     static let cornerRadiusInset: (opened: CGFloat, closed: CGFloat) = (opened: 13.0, closed: 4.0)
     static let size = (opened: CGSize(width: 90, height: 90), closed: CGSize(width: 20, height: 20))
@@ -53,7 +58,8 @@ enum MusicPlayerImageSizes {
         if let topLeftNotchpadding: CGFloat = screen.auxiliaryTopLeftArea?.width,
            let topRightNotchpadding: CGFloat = screen.auxiliaryTopRightArea?.width
         {
-            notchWidth = screen.frame.width - topLeftNotchpadding - topRightNotchpadding + 4
+            let hardwareNotchWidth = screen.frame.width - topLeftNotchpadding - topRightNotchpadding
+            notchWidth = max(0, hardwareNotchWidth - (2 * collapsedNotchSideInset))
         }
 
         // Check if the Mac has a notch

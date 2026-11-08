@@ -71,6 +71,61 @@ struct Eye: View {
     }
 }
 
+struct CigaretteIcon: View {
+    var body: some View {
+        ZStack(alignment: .bottomTrailing) {
+            VStack(spacing: 1) {
+                SmokeTrail(horizontalOffset: 0, duration: 1.4, delay: 0)
+                SmokeTrail(horizontalOffset: 3, duration: 1.7, delay: 0.6)
+            }
+            .offset(x: 4, y: -7)
+
+            HStack(spacing: 0) {
+                RoundedRectangle(cornerRadius: 1.5)
+                    .fill(.white.opacity(0.9))
+                    .frame(width: 18, height: 4)
+
+                RoundedRectangle(cornerRadius: 1)
+                    .fill(.orange)
+                    .frame(width: 4, height: 4)
+            }
+            .rotationEffect(.degrees(-8))
+        }
+        .frame(width: 30, height: 20)
+    }
+}
+
+private struct SmokeTrail: View {
+    let horizontalOffset: CGFloat
+    let duration: Double
+    let delay: Double
+    @State private var isRising = false
+
+    var body: some View {
+        Path { path in
+            path.move(to: CGPoint(x: 4, y: 10))
+            path.addCurve(
+                to: CGPoint(x: 7, y: 0),
+                control1: CGPoint(x: 0, y: 7),
+                control2: CGPoint(x: 11, y: 4)
+            )
+        }
+        .stroke(.white.opacity(0.8), style: StrokeStyle(lineWidth: 1.25, lineCap: .round))
+        .frame(width: 10, height: 10)
+        .offset(x: horizontalOffset, y: isRising ? -7 : 0)
+        .opacity(isRising ? 0.15 : 0.8)
+        .onAppear {
+            withAnimation(
+                .easeOut(duration: duration)
+                    .repeatForever(autoreverses: false)
+                    .delay(delay)
+            ) {
+                isRising = true
+            }
+        }
+    }
+}
+
 struct MinimalFaceFeatures_Previews: PreviewProvider {
     static var previews: some View {
         ZStack {
