@@ -71,58 +71,70 @@ struct Eye: View {
     }
 }
 
-struct CigaretteIcon: View {
+struct FootballPassAnimation: View {
+    private let passDuration = 1.25
+
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            VStack(spacing: 1) {
-                SmokeTrail(horizontalOffset: 0, duration: 1.4, delay: 0)
-                SmokeTrail(horizontalOffset: 3, duration: 1.7, delay: 0.6)
-            }
-            .offset(x: 4, y: -7)
+        TimelineView(.animation) { timeline in
+            GeometryReader { geometry in
+                let cycle = timeline.date.timeIntervalSinceReferenceDate
+                    .truncatingRemainder(dividingBy: passDuration * 2) / passDuration
+                let passingRight = cycle < 1
+                let progress = passingRight ? cycle : cycle - 1
+                let easedProgress = 0.5 - (cos(progress * .pi) / 2)
+                let startX = geometry.size.width * (passingRight ? 0.035 : 0.965)
+                let endX = geometry.size.width * (passingRight ? 0.965 : 0.035)
+                let ballX = startX + ((endX - startX) * easedProgress)
+                let ballY = geometry.size.height * 0.69 - (sin(progress * .pi) * 5)
 
-            HStack(spacing: 0) {
-                RoundedRectangle(cornerRadius: 1.5)
-                    .fill(.white.opacity(0.9))
-                    .frame(width: 18, height: 4)
+                ZStack {
+                    FootballPlayer(facingRight: true, isKicking: passingRight)
+                        .position(x: geometry.size.width * 0.015, y: geometry.size.height * 0.54)
 
-                RoundedRectangle(cornerRadius: 1)
-                    .fill(.orange)
-                    .frame(width: 4, height: 4)
+                    FootballPlayer(facingRight: false, isKicking: !passingRight)
+                        .position(x: geometry.size.width * 0.985, y: geometry.size.height * 0.54)
+
+                    Circle()
+                        .fill(.yellow)
+                        .frame(width: 9, height: 9)
+                        .overlay(Circle().stroke(.black.opacity(0.75), lineWidth: 1))
+                        .shadow(color: .yellow.opacity(0.8), radius: 1)
+                        .position(x: ballX, y: ballY)
+                }
             }
-            .rotationEffect(.degrees(-8))
         }
-        .frame(width: 30, height: 20)
     }
 }
 
-private struct SmokeTrail: View {
-    let horizontalOffset: CGFloat
-    let duration: Double
-    let delay: Double
-    @State private var isRising = false
+private struct FootballPlayer: View {
+    let facingRight: Bool
+    let isKicking: Bool
 
     var body: some View {
-        Path { path in
-            path.move(to: CGPoint(x: 4, y: 10))
-            path.addCurve(
-                to: CGPoint(x: 7, y: 0),
-                control1: CGPoint(x: 0, y: 7),
-                control2: CGPoint(x: 11, y: 4)
-            )
-        }
-        .stroke(.white.opacity(0.8), style: StrokeStyle(lineWidth: 1.25, lineCap: .round))
-        .frame(width: 10, height: 10)
-        .offset(x: horizontalOffset, y: isRising ? -7 : 0)
-        .opacity(isRising ? 0.15 : 0.8)
-        .onAppear {
-            withAnimation(
-                .easeOut(duration: duration)
-                    .repeatForever(autoreverses: false)
-                    .delay(delay)
-            ) {
-                isRising = true
+        VStack(spacing: 1) {
+            Circle()
+                .fill(.white)
+                .frame(width: 6, height: 6)
+
+            RoundedRectangle(cornerRadius: 1)
+                .fill(.white)
+                .frame(width: 5, height: 8)
+
+            HStack(spacing: 1) {
+                Capsule()
+                    .fill(.white)
+                    .frame(width: 3, height: 8)
+                    .rotationEffect(.degrees(isKicking ? -28 : -8), anchor: .top)
+                Capsule()
+                    .fill(.white)
+                    .frame(width: 3, height: 8)
+                    .rotationEffect(.degrees(isKicking ? 34 : 8), anchor: .top)
             }
+            .frame(height: 7, alignment: .top)
         }
+        .frame(width: 16, height: 26, alignment: .top)
+        .scaleEffect(x: facingRight ? 1 : -1, y: 1)
+        .animation(.easeInOut(duration: 0.18), value: isKicking)
     }
 }
 

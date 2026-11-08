@@ -20,7 +20,9 @@ let cornerRadiusInsets: (opened: (top: CGFloat, bottom: CGFloat), closed: (top: 
 // Keep the inactive notch clear of adjacent menu-bar items. This is applied only
 // on displays with a hardware notch; expanded content retains its normal width.
 let collapsedNotchSideInset: CGFloat = 16
-let inactiveFaceTrailingExtension: CGFloat = 28
+// Extra space for the inactive animation is split evenly on both sides of the
+// physical notch, so it stays centered in the menu bar.
+let inactiveAnimationSideExtension: CGFloat = 28
 
 enum MusicPlayerImageSizes {
     static let cornerRadiusInset: (opened: CGFloat, closed: CGFloat) = (opened: 13.0, closed: 4.0)

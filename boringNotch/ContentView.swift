@@ -80,7 +80,7 @@ struct ContentView: View {
         return chinWidth
     }
 
-    private var inactiveFaceTrailingOffset: CGFloat {
+    private var activeInactiveAnimationSideExtension: CGFloat {
         guard vm.notchState == .closed,
               !coordinator.expandingView.show,
               !musicManager.isPlaying,
@@ -91,7 +91,7 @@ struct ContentView: View {
             return 0
         }
 
-        return inactiveFaceTrailingExtension
+        return inactiveAnimationSideExtension
     }
 
     var body: some View {
@@ -126,7 +126,6 @@ struct ContentView: View {
                         color: ((vm.notchState == .open || isHovering) && Defaults[.enableShadow])
                             ? .black.opacity(0.7) : .clear, radius: Defaults[.cornerRadiusScaling] ? 6 : 4
                     )
-                    .offset(x: inactiveFaceTrailingOffset / 2)
                     .padding(
                         .bottom,
                         vm.effectiveClosedNotchHeight == 0 ? 10 : 0
@@ -381,21 +380,11 @@ struct ContentView: View {
 
     @ViewBuilder
     func BoringFaceAnimation() -> some View {
-        HStack(spacing: 0) {
-            Spacer(minLength: 0)
-            CigaretteIcon()
-                .scaleEffect(0.55)
-                .frame(
-                    width: inactiveFaceTrailingOffset,
-                    height: vm.effectiveClosedNotchHeight,
-                    alignment: .trailing
-                )
-                .offset(x: 10)
-        }
+        FootballPassAnimation()
         .frame(
-            width: vm.closedNotchSize.width + inactiveFaceTrailingOffset,
+            width: vm.closedNotchSize.width + (2 * activeInactiveAnimationSideExtension),
             height: vm.effectiveClosedNotchHeight,
-            alignment: .trailing
+            alignment: .center
         )
     }
 
